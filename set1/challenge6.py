@@ -2,7 +2,6 @@ import binascii
 from base64 import *
 from collections import Counter
 
-
 # msg is expected as raw binary
 def xor(msg, key):
     ret = bytearray()
