@@ -9,6 +9,7 @@ import pprint
 
 
 pp = pprint.PrettyPrinter(indent=4)
+
 BLOCK_SIZE = 16  # Bytes
 pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s) % BLOCK_SIZE)
 
