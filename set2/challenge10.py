@@ -70,6 +70,8 @@ def aes_cbc_decrypt(msg, key, iv = None):
             break
     return decrypted
 
-file_contents = base64.b64decode(open("10.txt","rb").read())
-print aes_cbc_decrypt(file_contents, "YELLOW SUBMARINE", "0" * 16)
-    
+
+if __name__ == '__main__':
+    file_contents = base64.b64decode(open("10.txt","rb").read())
+    print aes_cbc_decrypt(file_contents, "YELLOW SUBMARINE", "0" * 16)
+        
