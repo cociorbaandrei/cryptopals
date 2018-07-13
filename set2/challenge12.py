@@ -61,7 +61,5 @@ while itr != 0:
     except:
         pass
     itr -= 1
-    
+
 print decrypted
-
-
