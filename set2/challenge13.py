@@ -11,6 +11,17 @@ pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * chr(BLOCK_SIZE - len(s)
 unpad = lambda s : s[:len(s) - ord(s[len(s) - 1])]
 RANDOM_KEY = os.urandom(16)
 
+def chunks16(line):
+    chunk_size = 16
+    chunks = []
+    so_far = 0
+    while True:
+        chunks.append(line[so_far:so_far+chunk_size])
+        so_far += chunk_size
+        if so_far >= len(line):
+            break
+    return chunks
+
 def parse_cookie(cookie):
     parsed = {}
     for keyvalue in cookie.split("&"):
@@ -18,28 +29,19 @@ def parse_cookie(cookie):
         parsed[keypair[0]] = keypair[1]
     return parsed
 
-def valid_email(email):
-    return bool(re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email))
-
 def encode_dictionary(dictionary):
-    encoded = ""
-    count = 0
-    for key, value in sorted(dictionary.iteritems()):
-        encoded += str(key) + "=" + str(value)
-        count += 1
-        if(count != len(dictionary)):
-            encoded += "&"
+    encoded = "email={email}&uid={uid}&role={role}".format(
+        email=dictionary['email'],
+        uid=dictionary['uid'],
+        role=dictionary['role'])
     return encoded
 
 def profile_for(email):
-    if(not valid_email(email)):
-        raise Exception("Invalid email address!")
-    else:
         user_profile = {}
         user_profile["email"] = email
-        user_profile["uid"]  = randrange(1,1000)
+        user_profile["uid"]  = 10
         user_profile["role"] = "user"
-        return (user_profile)
+        return encode_dictionary(user_profile)
 
 
 def encrypt_profile(input):
@@ -53,13 +55,33 @@ def decrypt_profile(input):
 
 if __name__ == '__main__':
     print binascii.hexlify(RANDOM_KEY)
-    print parse_cookie("foo=bar&baz=qux&zap=zazzle")
-    profile = profile_for("cociorbaandrei@gmail.com")
-    encoded = encode_dictionary(profile)
+    payload = "AAAAAAAAAA"
+    payload += pad("admin")
+    payload += "A" * 11
+    payload +="cociorbaandrei@gmail.com"
+
+    encoded = profile_for(payload)
+
     crypted = encrypt_profile(encoded)
-    hex_crypted = binascii.hexlify(crypted)
+
+    for line in chunks16(crypted):
+        print binascii.hexlify(line), decrypt_profile(line)
+
     decrypted = decrypt_profile(crypted)
     parsed = parse_cookie(decrypted)
-    print hex_crypted
-    print parsed
+
+    print unpad(decrypted)
+    chunks = chunks16(crypted)
+    
+    new_cipher = ""
+    new_cipher += chunks[0]
+    new_cipher += chunks[1]
+    new_cipher += chunks[2]
+    new_cipher += chunks[3]
+    new_cipher += chunks[4]
+    new_cipher += chunks[1] # swap user | PADDIG block with admin | PADDING 
+
+    print "Tampered:"
+    print unpad(decrypt_profile(new_cipher))
+    
     

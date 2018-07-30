@@ -39,7 +39,6 @@ def oracle(input):
     return 'CBC' if not [v for k,v in dict.items() if v > 1] else 'ECB'
 
 
-
 itr = 16 * 9 - 1
 pay = "A" * itr
 dict = {}
