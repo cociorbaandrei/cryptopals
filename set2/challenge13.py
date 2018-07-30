@@ -79,7 +79,7 @@ if __name__ == '__main__':
     new_cipher += chunks[2]
     new_cipher += chunks[3]
     new_cipher += chunks[4]
-    new_cipher += chunks[1] # swap user | PADDIG block with admin | PADDING 
+    new_cipher += chunks[1] # swap user||PADDING block with admin||PADDING 
 
     print "Tampered:"
     print unpad(decrypt_profile(new_cipher))
